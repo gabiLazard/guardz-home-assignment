@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type {Submission, CreateSubmissionDto} from '../types/submission';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const submissionsApi = {
   create: async (data: CreateSubmissionDto): Promise<Submission> => {
