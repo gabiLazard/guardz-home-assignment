@@ -46,4 +46,4 @@ echo "  curl http://$GCP_IP:8080/api/submissions"
 echo ""
 echo "View logs with:"
 echo "  docker-compose logs -f"
-echo ""
+
