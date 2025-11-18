@@ -13,7 +13,7 @@ echo ""
 # Check if IP address is provided
 if [ -z "$1" ]; then
     echo "Usage: ./deploy.sh <GCP_IP_ADDRESS>"
-    echo "Example: ./deploy.sh 34.123.45.67"
+    echo "Example: ./deploy.sh 127.0.0.1
     echo ""
     echo "For local development, use: docker-compose up --build"
     exit 1
