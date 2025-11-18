@@ -1,5 +1,10 @@
 import axios from 'axios';
-import type {Submission, CreateSubmissionDto} from '../types/submission';
+import type {
+  Submission,
+  CreateSubmissionDto,
+  PaginatedResponse,
+  QueryParams,
+} from '../types/submission';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -9,8 +14,8 @@ export const submissionsApi = {
     return response.data;
   },
 
-  getAll: async (): Promise<Submission[]> => {
-    const response = await axios.get(`${API_BASE_URL}/submissions`);
+  getAll: async (params?: QueryParams): Promise<PaginatedResponse<Submission>> => {
+    const response = await axios.get(`${API_BASE_URL}/submissions`, { params });
     return response.data;
   },
 

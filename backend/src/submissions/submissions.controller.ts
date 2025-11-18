@@ -4,11 +4,13 @@ import {
   Post,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
+import { QuerySubmissionDto } from './dto/query-submission.dto';
 
 @Controller('submissions')
 export class SubmissionsController {
@@ -21,8 +23,8 @@ export class SubmissionsController {
   }
 
   @Get()
-  async findAll() {
-    return this.submissionsService.findAll();
+  async findAll(@Query() query: QuerySubmissionDto) {
+    return this.submissionsService.findAll(query);
   }
 
   @Get(':id')

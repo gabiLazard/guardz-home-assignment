@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SubmissionsController } from './submissions.controller';
 import { SubmissionsService } from './submissions.service';
 import { Submission, SubmissionSchema } from './schemas/submission.schema';
+import { SubmissionRepository } from './repositories/submission.repository';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { Submission, SubmissionSchema } from './schemas/submission.schema';
     ]),
   ],
   controllers: [SubmissionsController],
-  providers: [SubmissionsService],
+  providers: [SubmissionsService, SubmissionRepository],
 })
 export class SubmissionsModule {}

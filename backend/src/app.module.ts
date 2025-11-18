@@ -10,6 +10,9 @@ import { SubmissionsModule } from './submissions/submissions.module';
     }),
     MongooseModule.forRoot(
       process.env.MONGODB_URI || 'mongodb://localhost:27017',
+      {
+        autoIndex: true, // Automatically build indexes defined in schemas
+      },
     ),
     SubmissionsModule,
   ],

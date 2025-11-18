@@ -6,8 +6,8 @@ describe('SubmissionsController', () => {
   let controller: SubmissionsController;
   let service: SubmissionsService;
 
-  const mockSubmission = {
-    _id: '507f1f77bcf86cd799439011',
+  const mockSubmissionResponseDto = {
+    id: '507f1f77bcf86cd799439011',
     name: 'John Doe',
     email: 'john@example.com',
     phone: '1234567890',
@@ -42,7 +42,7 @@ describe('SubmissionsController', () => {
   });
 
   describe('create', () => {
-    it('should create a new submission', async () => {
+    it('should create a new submission and return DTO', async () => {
       const createDto = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -50,31 +50,62 @@ describe('SubmissionsController', () => {
         message: 'Test message',
       };
 
-      mockSubmissionsService.create.mockResolvedValue(mockSubmission);
+      mockSubmissionsService.create.mockResolvedValue(mockSubmissionResponseDto);
 
       const result = await controller.create(createDto);
-      expect(result).toEqual(mockSubmission);
+      expect(result).toEqual(mockSubmissionResponseDto);
       expect(service.create).toHaveBeenCalledWith(createDto);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of submissions', async () => {
-      const submissions = [mockSubmission];
-      mockSubmissionsService.findAll.mockResolvedValue(submissions);
+    it('should return paginated submissions with DTOs', async () => {
+      const paginatedResponse = {
+        data: [mockSubmissionResponseDto],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          totalItems: 1,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      };
+      mockSubmissionsService.findAll.mockResolvedValue(paginatedResponse);
 
-      const result = await controller.findAll();
-      expect(result).toEqual(submissions);
-      expect(service.findAll).toHaveBeenCalled();
+      const query = { page: 1 };
+      const result = await controller.findAll(query);
+      expect(result).toEqual(paginatedResponse);
+      expect(service.findAll).toHaveBeenCalledWith(query);
+    });
+
+    it('should pass query parameters including sort to service', async () => {
+      const paginatedResponse = {
+        data: [mockSubmissionResponseDto],
+        pagination: {
+          page: 2,
+          pageSize: 10,
+          totalItems: 25,
+          totalPages: 3,
+          hasNext: true,
+          hasPrev: true,
+        },
+      };
+      mockSubmissionsService.findAll.mockResolvedValue(paginatedResponse);
+
+      const query = { page: 2, search: 'John', sortBy: 'name', sortOrder: 'asc' as const };
+      const result = await controller.findAll(query);
+      expect(result).toEqual(paginatedResponse);
+      expect(service.findAll).toHaveBeenCalledWith(query);
     });
   });
 
   describe('findOne', () => {
-    it('should return a single submission', async () => {
-      mockSubmissionsService.findOne.mockResolvedValue(mockSubmission);
+    it('should return a single submission as DTO', async () => {
+      mockSubmissionsService.findOne.mockResolvedValue(mockSubmissionResponseDto);
 
       const result = await controller.findOne('507f1f77bcf86cd799439011');
-      expect(result).toEqual(mockSubmission);
+      expect(result).toEqual(mockSubmissionResponseDto);
       expect(service.findOne).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
     });
   });
