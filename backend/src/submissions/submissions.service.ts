@@ -4,25 +4,49 @@ import { SubmissionDocument } from './schemas/submission.schema';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { QuerySubmissionDto, PAGE_SIZE } from './dto/query-submission.dto';
 import { SubmissionResponseDto } from './dto/submission-response.dto';
-import { PaginatedSubmissionResponseDto, PaginationMetaDto } from './dto/paginated-submission-response.dto';
+import {
+  PaginatedSubmissionResponseDto,
+  PaginationMetaDto,
+} from './dto/paginated-submission-response.dto';
 import { SubmissionRepository } from './repositories/submission.repository';
 import { plainToInstance } from 'class-transformer';
 
+// Helper type for Mongoose documents with methods
+interface MongooseDocumentMethods<T> {
+  toObject(): T;
+}
+
+type SubmissionDocumentWithMethods = SubmissionDocument &
+  MongooseDocumentMethods<Record<string, any>>;
+
 @Injectable()
 export class SubmissionsService {
-  constructor(
-    private readonly submissionRepository: SubmissionRepository,
-  ) {}
+  constructor(private readonly submissionRepository: SubmissionRepository) {}
 
-  async create(createSubmissionDto: CreateSubmissionDto): Promise<SubmissionResponseDto> {
-    const submission = await this.submissionRepository.create(createSubmissionDto);
-    return plainToInstance(SubmissionResponseDto, submission.toObject(), {
+  async create(
+    createSubmissionDto: CreateSubmissionDto,
+  ): Promise<SubmissionResponseDto> {
+    const submission =
+      await this.submissionRepository.create(createSubmissionDto);
+    const plainObject = (
+      submission as SubmissionDocumentWithMethods
+    ).toObject() as Record<string, unknown>;
+    return plainToInstance(SubmissionResponseDto, plainObject, {
       excludeExtraneousValues: true,
     });
   }
 
-  async findAll(query: QuerySubmissionDto): Promise<PaginatedSubmissionResponseDto> {
-    const { page = 1, search, sortBy = 'createdAt', sortOrder = 'desc', startDate, endDate } = query;
+  async findAll(
+    query: QuerySubmissionDto,
+  ): Promise<PaginatedSubmissionResponseDto> {
+    const {
+      page = 1,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      startDate,
+      endDate,
+    } = query;
 
     // Build filter query
     const filter: FilterQuery<SubmissionDocument> = {};
@@ -38,16 +62,17 @@ export class SubmissionsService {
 
     // Date range filtering
     if (startDate || endDate) {
-      filter.createdAt = {};
+      const dateFilter: { $gte?: Date; $lte?: Date } = {};
       if (startDate) {
-        filter.createdAt.$gte = new Date(startDate);
+        dateFilter.$gte = new Date(startDate);
       }
       if (endDate) {
         // Set end date to end of day
         const endDateTime = new Date(endDate);
         endDateTime.setHours(23, 59, 59, 999);
-        filter.createdAt.$lte = endDateTime;
+        dateFilter.$lte = endDateTime;
       }
+      filter.createdAt = dateFilter;
     }
 
     // Calculate pagination
@@ -68,11 +93,14 @@ export class SubmissionsService {
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
     // Transform to DTOs
-    const data = submissions.map((submission) =>
-      plainToInstance(SubmissionResponseDto, submission.toObject(), {
+    const data = submissions.map((submission) => {
+      const plainObject = (
+        submission as SubmissionDocumentWithMethods
+      ).toObject() as Record<string, unknown>;
+      return plainToInstance(SubmissionResponseDto, plainObject, {
         excludeExtraneousValues: true,
-      }),
-    );
+      });
+    });
 
     const pagination: PaginationMetaDto = {
       page,
@@ -91,7 +119,10 @@ export class SubmissionsService {
     if (!submission) {
       return null;
     }
-    return plainToInstance(SubmissionResponseDto, submission.toObject(), {
+    const plainObject = (
+      submission as SubmissionDocumentWithMethods
+    ).toObject() as Record<string, unknown>;
+    return plainToInstance(SubmissionResponseDto, plainObject, {
       excludeExtraneousValues: true,
     });
   }

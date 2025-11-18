@@ -9,11 +9,13 @@ async function bootstrap() {
   app.enableCors();
 
   // Global validation pipe
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // API prefix
   app.setGlobalPrefix('api');
@@ -22,4 +24,5 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap();
+
+void bootstrap();

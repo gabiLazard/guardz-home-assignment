@@ -1,8 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionsService } from './submissions.service';
-import { SubmissionRepository } from './repositories/submission.repository';
+import {
+  SubmissionRepository,
+  FindAllOptions,
+} from './repositories/submission.repository';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { QuerySubmissionDto } from './dto/query-submission.dto';
+import { SubmissionDocument } from './schemas/submission.schema';
 
 describe('SubmissionsService', () => {
   let service: SubmissionsService;
@@ -18,7 +22,7 @@ describe('SubmissionsService', () => {
     message: 'Test message',
     createdAt: mockDate,
     updatedAt: mockDate,
-    toObject: jest.fn().mockReturnValue({
+    toObject: jest.fn<() => Record<string, unknown>>().mockReturnValue({
       _id: '507f1f77bcf86cd799439011',
       name: 'John Doe',
       email: 'john@example.com',
@@ -27,13 +31,13 @@ describe('SubmissionsService', () => {
       createdAt: mockDate,
       updatedAt: mockDate,
     }),
-  };
+  } as unknown as SubmissionDocument;
 
   const mockRepositoryMethods = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-    findById: jest.fn(),
-    count: jest.fn(),
+    create: jest.fn<Promise<SubmissionDocument>, [CreateSubmissionDto]>(),
+    findAll: jest.fn<Promise<SubmissionDocument[]>, [FindAllOptions]>(),
+    findById: jest.fn<Promise<SubmissionDocument | null>, [string]>(),
+    count: jest.fn<Promise<number>, [unknown?]>(),
   };
 
   beforeEach(async () => {
@@ -239,11 +243,20 @@ describe('SubmissionsService', () => {
 
       await service.findAll(query);
 
-      const callArgs = (repository.findAll as jest.Mock).mock.calls[0][0];
-      expect(callArgs.filter.createdAt).toBeDefined();
-      expect(callArgs.filter.createdAt.$lte).toBeDefined();
+      const mockCalls = (
+        repository.findAll as jest.Mock<
+          Promise<SubmissionDocument[]>,
+          [FindAllOptions]
+        >
+      ).mock.calls;
+      const callArgs: FindAllOptions = mockCalls[0][0];
+      const createdAtFilter = callArgs.filter?.createdAt as unknown as {
+        $lte?: Date;
+      };
+      expect(createdAtFilter).toBeDefined();
+      expect(createdAtFilter?.$lte).toBeDefined();
       // End date should be set to end of day
-      const endDate = callArgs.filter.createdAt.$lte;
+      const endDate = createdAtFilter?.$lte as Date;
       expect(endDate.getHours()).toBe(23);
       expect(endDate.getMinutes()).toBe(59);
       expect(endDate.getSeconds()).toBe(59);
@@ -259,10 +272,20 @@ describe('SubmissionsService', () => {
 
       await service.findAll(query);
 
-      const callArgs = (repository.findAll as jest.Mock).mock.calls[0][0];
-      expect(callArgs.filter.createdAt).toBeDefined();
-      expect(callArgs.filter.createdAt.$gte).toEqual(new Date('2024-01-01'));
-      expect(callArgs.filter.createdAt.$lte).toBeDefined();
+      const mockCalls = (
+        repository.findAll as jest.Mock<
+          Promise<SubmissionDocument[]>,
+          [FindAllOptions]
+        >
+      ).mock.calls;
+      const callArgs: FindAllOptions = mockCalls[0][0];
+      const createdAtFilter = callArgs.filter?.createdAt as unknown as {
+        $gte?: Date;
+        $lte?: Date;
+      };
+      expect(createdAtFilter).toBeDefined();
+      expect(createdAtFilter?.$gte).toEqual(new Date('2024-01-01'));
+      expect(createdAtFilter?.$lte).toBeDefined();
     });
 
     it('should handle combined search and date filters', async () => {
@@ -276,9 +299,15 @@ describe('SubmissionsService', () => {
 
       await service.findAll(query);
 
-      const callArgs = (repository.findAll as jest.Mock).mock.calls[0][0];
-      expect(callArgs.filter.$or).toBeDefined();
-      expect(callArgs.filter.createdAt).toBeDefined();
+      const mockCalls = (
+        repository.findAll as jest.Mock<
+          Promise<SubmissionDocument[]>,
+          [FindAllOptions]
+        >
+      ).mock.calls;
+      const callArgs: FindAllOptions = mockCalls[0][0];
+      expect(callArgs.filter?.$or).toBeDefined();
+      expect(callArgs.filter?.createdAt).toBeDefined();
     });
 
     it('should return empty array when no results', async () => {

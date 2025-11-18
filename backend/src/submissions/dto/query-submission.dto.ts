@@ -1,4 +1,11 @@
-import { IsOptional, IsString, IsInt, Min, IsIn, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsInt,
+  Min,
+  IsIn,
+  IsDateString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { Sanitize } from '../../common/decorators/sanitize.decorator';
 

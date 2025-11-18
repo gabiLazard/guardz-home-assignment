@@ -1,9 +1,15 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 
+// Type for the Transform decorator input
+type TransformInput = { obj: { _id?: { toString(): string } } };
+
 @Exclude()
 export class SubmissionResponseDto {
   @Expose()
-  @Transform(({ obj }) => obj._id?.toString())
+  @Transform(({ obj }: TransformInput) => {
+    const id = obj._id;
+    return id ? id.toString() : undefined;
+  })
   id: string;
 
   @Expose()

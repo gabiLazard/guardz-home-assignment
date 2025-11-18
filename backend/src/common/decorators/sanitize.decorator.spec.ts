@@ -19,7 +19,9 @@ describe('Sanitize Decorator', () => {
   });
 
   it('should remove all HTML tags and attributes', () => {
-    const input = { text: '<div class="test" onclick="malicious()">Content</div>' };
+    const input = {
+      text: '<div class="test" onclick="malicious()">Content</div>',
+    };
     const result = plainToInstance(TestDto, input);
 
     expect(result.text).toBe('Content');
@@ -112,7 +114,7 @@ describe('Sanitize Decorator', () => {
   });
 
   it('should handle non-string values by returning them as-is', () => {
-    const input = { text: 123 as any };
+    const input = { text: 123 as unknown as string };
     const result = plainToInstance(TestDto, input);
 
     expect(result.text).toBe(123);

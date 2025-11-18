@@ -68,7 +68,9 @@ describe('SubmissionsController', () => {
         message: 'Test message',
       };
 
-      mockSubmissionsService.create.mockResolvedValue(mockSubmissionResponseDto);
+      mockSubmissionsService.create.mockResolvedValue(
+        mockSubmissionResponseDto,
+      );
 
       const result = await controller.create(createDto);
 
@@ -84,7 +86,10 @@ describe('SubmissionsController', () => {
         message: 'Another message',
       };
 
-      const responseWithoutPhone = { ...mockSubmissionResponseDto, phone: undefined };
+      const responseWithoutPhone = {
+        ...mockSubmissionResponseDto,
+        phone: undefined,
+      };
       mockSubmissionsService.create.mockResolvedValue(responseWithoutPhone);
 
       const result = await controller.create(createDto);
@@ -100,7 +105,9 @@ describe('SubmissionsController', () => {
         message: 'Test message',
       };
 
-      mockSubmissionsService.create.mockResolvedValue(mockSubmissionResponseDto);
+      mockSubmissionsService.create.mockResolvedValue(
+        mockSubmissionResponseDto,
+      );
 
       // The @HttpCode decorator ensures 201 status
       const result = await controller.create(createDto);
@@ -123,7 +130,11 @@ describe('SubmissionsController', () => {
       const query: QuerySubmissionDto = { page: 2 };
       const page2Response = {
         ...mockPaginatedResponse,
-        pagination: { ...mockPaginatedResponse.pagination, page: 2, hasPrev: true },
+        pagination: {
+          ...mockPaginatedResponse.pagination,
+          page: 2,
+          hasPrev: true,
+        },
       };
       mockSubmissionsService.findAll.mockResolvedValue(page2Response);
 
@@ -207,7 +218,9 @@ describe('SubmissionsController', () => {
   describe('findOne', () => {
     it('should return a single submission by id', async () => {
       const id = '507f1f77bcf86cd799439011';
-      mockSubmissionsService.findOne.mockResolvedValue(mockSubmissionResponseDto);
+      mockSubmissionsService.findOne.mockResolvedValue(
+        mockSubmissionResponseDto,
+      );
 
       const result = await controller.findOne(id);
 
@@ -230,7 +243,9 @@ describe('SubmissionsController', () => {
       const ids = ['507f1f77bcf86cd799439011', '123456789012345678901234'];
 
       for (const id of ids) {
-        mockSubmissionsService.findOne.mockResolvedValue(mockSubmissionResponseDto);
+        mockSubmissionsService.findOne.mockResolvedValue(
+          mockSubmissionResponseDto,
+        );
         await controller.findOne(id);
         expect(service.findOne).toHaveBeenCalledWith(id);
       }

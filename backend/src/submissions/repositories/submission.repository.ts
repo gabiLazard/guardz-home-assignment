@@ -19,7 +19,9 @@ export class SubmissionRepository {
     private readonly submissionModel: Model<SubmissionDocument>,
   ) {}
 
-  async create(createSubmissionDto: CreateSubmissionDto): Promise<SubmissionDocument> {
+  async create(
+    createSubmissionDto: CreateSubmissionDto,
+  ): Promise<SubmissionDocument> {
     const submission = new this.submissionModel(createSubmissionDto);
     return submission.save();
   }
@@ -34,10 +36,11 @@ export class SubmissionRepository {
     } = options;
 
     const sortDirection = sortOrder === 'asc' ? 1 : -1;
+    const sortObject: Record<string, 1 | -1> = { [sortBy]: sortDirection };
 
     return this.submissionModel
       .find(filter)
-      .sort({ [sortBy]: sortDirection })
+      .sort(sortObject)
       .skip(skip)
       .limit(limit)
       .exec();

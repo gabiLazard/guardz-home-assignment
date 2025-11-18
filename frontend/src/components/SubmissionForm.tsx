@@ -47,11 +47,12 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({ onSubmitSuccess 
         if (value.length > MAX_NAME_LENGTH) return `Name must be ${MAX_NAME_LENGTH} characters or less`;
         return undefined;
 
-      case 'email':
+      case 'email': {
         if (!value.trim()) return 'Email is required';
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) return 'Please enter a valid email address';
         return undefined;
+      }
 
       case 'phone':
         if (value && value.replace(/\D/g, '').length > MAX_PHONE_LENGTH) {
@@ -171,8 +172,9 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({ onSubmitSuccess 
       setTimeout(() => {
         setSuccess(false);
       }, 3000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to submit form. Please try again.');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || 'Failed to submit form. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -13,10 +13,7 @@ export class PaginatedSubmissionResponseDto {
   data: SubmissionResponseDto[];
   pagination: PaginationMetaDto;
 
-  constructor(
-    data: SubmissionResponseDto[],
-    pagination: PaginationMetaDto,
-  ) {
+  constructor(data: SubmissionResponseDto[], pagination: PaginationMetaDto) {
     this.data = data;
     this.pagination = pagination;
   }

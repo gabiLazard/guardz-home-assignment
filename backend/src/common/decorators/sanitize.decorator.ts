@@ -6,7 +6,7 @@ import sanitizeHtml from 'sanitize-html';
  * Removes all HTML tags and dangerous content
  */
 export function Sanitize() {
-  return Transform(({ value }) => {
+  return Transform(({ value }: { value: unknown }): unknown => {
     if (typeof value !== 'string') {
       return value;
     }

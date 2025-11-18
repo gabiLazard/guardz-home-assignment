@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Paper,
   Table,
@@ -45,11 +45,7 @@ export const SubmissionsTable: React.FC<SubmissionsTableProps> = ({ refreshTrigg
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    fetchSubmissions();
-  }, [refreshTrigger, page, search, startDate, endDate, sortBy, sortOrder]);
-
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -66,12 +62,17 @@ export const SubmissionsTable: React.FC<SubmissionsTableProps> = ({ refreshTrigg
       const response = await submissionsApi.getAll(params);
       setSubmissions(response.data);
       setPagination(response.pagination);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch submissions.');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || 'Failed to fetch submissions.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, search, startDate, endDate, sortBy, sortOrder]);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [fetchSubmissions, refreshTrigger]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
