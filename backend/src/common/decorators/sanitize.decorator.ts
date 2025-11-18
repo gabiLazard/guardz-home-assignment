@@ -15,7 +15,7 @@ export function Sanitize() {
     return sanitizeHtml(value, {
       allowedTags: [], // No HTML tags allowed
       allowedAttributes: {}, // No attributes allowed
-      disallowedTagsMode: 'recursiveEscape',
+      disallowedTagsMode: 'discard', // Discard tags instead of escaping
     }).trim();
   });
 }
