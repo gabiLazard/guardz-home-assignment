@@ -13,7 +13,7 @@ echo ""
 # Check if IP address is provided
 if [ -z "$1" ]; then
     echo "Usage: ./deploy.sh <GCP_IP_ADDRESS>"
-    echo "Example: ./deploy.sh 127.0.0.1
+    echo "Example: ./deploy.sh 127.0.0.1"
     echo ""
     echo "For local development, use: docker-compose up --build"
     exit 1
@@ -45,5 +45,4 @@ echo "  curl -X POST -H \"Content-Type: application/json\" -d '{\"name\":\"Test\
 echo "  curl http://$GCP_IP:8080/api/submissions"
 echo ""
 echo "View logs with:"
-echo "  docker-compose logs -f"
-
+echo "docker-compose logs -f"
