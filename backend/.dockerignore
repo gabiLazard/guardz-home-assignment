@@ -5,3 +5,10 @@ dist
 .git
 .gitignore
 README.md
+test
+coverage
+*.spec.ts
+*.test.ts
+.vscode
+.idea
+*.md

@@ -5,3 +5,13 @@ dist
 .git
 .gitignore
 README.md
+.vscode
+.idea
+*.md
+coverage
+public/.gitkeep
+**/__tests__
+**/*.test.tsx
+**/*.test.ts
+**/*.spec.tsx
+**/*.spec.ts
